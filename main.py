@@ -15,6 +15,9 @@ bot = commands.Bot(command_prefix='RND')
 #bully target for bully command
 bullyTarget = ''
 
+#response for crazy number of dice or sides
+randyArray = ['https://tenor.com/beRjI.gif', 'https://tenor.com/bepda.gif', 'https://tenor.com/bPnmo.gif', 'https://tenor.com/bPnmr.gif', 'https://tenor.com/bPnmv.gif']
+
 #dice roller function that gets called by RNDroll (number of dice)d(how many sides each die has)
 def dice_roller(content):
   numregex = re.compile(r'(\d+)(d)(\d+)')
@@ -26,13 +29,13 @@ def dice_roller(content):
   
   #won't calculate a roll if numbers are ridiculous
   if dicenum > 100 or dicelen > 100:
-    return ('no, fuck you')
+    return randyArray[random.randint(0, len(randyArray) - 1)]
 
   while dicenum > 0:
       totalroll += random.randint(1, dicelen)
       dicenum -= 1
 
-  return str(totalroll)
+  return 'You rolled a total of {}'.format(str(totalroll))
 
 #bully function to set target
 def bullyResponse(content):
@@ -41,7 +44,7 @@ def bullyResponse(content):
   else:
     global bullyTarget
     bullyTarget = content.message.mentions[0]
-    return ('{} has chosen to bully {}'.format(content.author, bullyTarget.name))
+    return ('{} has chosen to bully {}. Target acquired.'.format(content.author.name, bullyTarget.name))
 
 #Login confirmation
 @bot.event
@@ -51,7 +54,7 @@ async def on_ready():
 #dice roller command
 @bot.command()
 async def roll(ctx, arg):
-  await ctx.send(ctx.author.name + ' rolled a total of ' + dice_roller(arg))
+  await ctx.send(dice_roller(arg))
 
 #select target to be bullied
 @bot.command()
