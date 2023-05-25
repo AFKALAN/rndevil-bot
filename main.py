@@ -5,46 +5,50 @@ import re
 import random
 from dotenv import load_dotenv
 
+#Setup intents needed to run commands
+intents = discord.Intents.default()
+intents.message_content = True
+
 #Set super secret token for bot login
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
 
 #Load bot instance
-bot = commands.Bot(command_prefix='RND')
+bot = commands.Bot(command_prefix='RND', intents=intents)
 
 #bully target for bully command
-bullyTarget = ''
+bully_target = ''
 
 #response for crazy number of dice or sides
-randyArray = ['https://tenor.com/beRjI.gif', 'https://tenor.com/bepda.gif', 'https://tenor.com/bPnmo.gif', 'https://tenor.com/bPnmr.gif', 'https://tenor.com/bPnmv.gif']
+randy_array = ['https://tenor.com/beRjI.gif', 'https://tenor.com/bepda.gif', 'https://tenor.com/bPnmo.gif', 'https://tenor.com/bPnmr.gif', 'https://tenor.com/bPnmv.gif']
 
 #dice roller function that gets called by RNDroll (number of dice)d(how many sides each die has)
 def dice_roller(content):
   numregex = re.compile(r'(\d+)(d)(\d+)')
-  totalroll = 0
+  total_roll = 0
 
   roller = numregex.search(content)
-  dicenum = int(roller.group(1))
-  dicelen = int(roller.group(3))
+  dice_num = int(roller.group(1))
+  dice_len = int(roller.group(3))
   
   #won't calculate a roll if numbers are ridiculous
-  if dicenum > 100 or dicelen > 100:
-    return randyArray[random.randint(0, len(randyArray) - 1)]
+  if dice_num > 100 or dice_len > 100:
+    return randy_array[random.randint(0, len(randy_array) - 1)]
 
-  while dicenum > 0:
-      totalroll += random.randint(1, dicelen)
-      dicenum -= 1
+  while dice_num > 0:
+      total_roll += random.randint(1, dice_len)
+      dice_num -= 1
 
-  return 'You rolled a total of {}'.format(str(totalroll))
+  return 'You rolled a total of {}'.format(str(total_roll))
 
 #bully function to set target
 def bullyResponse(content):
   if len(content.message.mentions) != 1:
     return ('There can only be 1 bully target at a time. Please try again.')
   else:
-    global bullyTarget
-    bullyTarget = content.message.mentions[0]
-    return ('{} has chosen to bully {}. Target acquired.'.format(content.author.name, bullyTarget.name))
+    global bully_target
+    bully_target = content.message.mentions[0]
+    return ('{} has chosen to bully {}. Target acquired.'.format(content.author.name, bully_target.name))
 
 #Login confirmation
 @bot.event
@@ -58,6 +62,7 @@ async def roll(ctx, arg):
 
 #select target to be bullied
 @bot.command()
+@commands.is_owner()
 async def bully(ctx):
   await ctx.send(bullyResponse(ctx))
 
@@ -67,10 +72,9 @@ async def on_message(message):
   if message.author == bot.user:
     return
 
-  if message.author == bullyTarget:
-    await message.channel.send('Shutup {}, you virgin'.format(bullyTarget.name))
+  if message.author == bully_target:
+    await message.channel.send('Shutup {}, you virgin'.format(bully_target.name))
   
   await bot.process_commands(message)
-
 
 bot.run(TOKEN)
