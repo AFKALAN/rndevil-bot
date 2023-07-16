@@ -49,7 +49,7 @@ def bullyResponse(content):
 #Login confirmation
 @bot.event
 async def on_ready():
-  print('We have logged in as {0.user}'.format(bot))
+  print(f'We have logged in as {bot.user}')
 
 #dice roller command
 @bot.command()
@@ -68,7 +68,7 @@ async def on_message(message):
     return
 
   if message.author == bullyTarget:
-    await message.channel.send('Shutup {}, you virgin'.format(bullyTarget.name))
+    await message.channel.send(f'Shutup {bullyTarget.name}, you virgin')
   
   await bot.process_commands(message)
 
