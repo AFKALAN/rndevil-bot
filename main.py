@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 
 #Setup intents needed to run commands
 intents = discord.Intents.default()
-intents.message_content = True
 
 #Set super secret token for bot login
 load_dotenv()
